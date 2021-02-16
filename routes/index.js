@@ -59,5 +59,28 @@ router.post('/login', function (req, res) {
   })
 })
 
+//update user info
+router.post('/update', function(req, res){
+  //get userid from cookie
+  const userid = req.cookies.userid
+  if(!userid){
+    res.send({code: 1, msg: "haven't login"})
+    return
+  }
+  //get user information and update
+  const user = req.body
+  UserModel.findByIdAndUpdate({_id: userid}, user, function (error, oldUser) {
+    if(!oldUser){//this userid is not in database
+      res.clearCookie('userid') //inform browser to delete cookie
+      res.send({code: 1, msg: "haven't login"})
+    }else{
+      const {_id, username, type} = oldUser
+      const data = Object.assign(user, {_id, username, type})
+      res.send({code: 0, data})
+    }
+  })
+
+})
+
 
 module.exports = router;

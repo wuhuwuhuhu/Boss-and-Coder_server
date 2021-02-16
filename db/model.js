@@ -24,6 +24,7 @@ const userSchema = mongoose.Schema({
     password: {type: String, required: true},
     type:{type:String, required: true},
     avatar: {type:String},
+    post: {type:String},
     info: {type:String},
     company: {type:String},
     salary:  {type:String}

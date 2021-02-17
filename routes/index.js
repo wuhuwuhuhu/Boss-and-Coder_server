@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 const md5 = require('blueimp-md5') //md5 implementation
-const {UserModel} = require('../db/model')
+const {UserModel} = require('../db/model');
+const { route } = require('./users');
 const filter_password = {password: 0, __v: 0} //filter password
 
 /* GET home page. */
@@ -93,6 +94,14 @@ router.get('/user', function(req, res) {
       return res.send({code: 1, msg: "doesn't have this userid in database"})
     }
     res.send({code: 0, data: user})
+  })
+})
+
+//get userlist by type
+router.get('/userlist', function(req,res) {
+  const{type} = req.query
+  UserModel.find({type},filter_password, function(error, users){
+    res.send({code: 0, data: users})
   })
 })
 

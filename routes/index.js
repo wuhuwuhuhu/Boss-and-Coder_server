@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const md5 = require('blueimp-md5') //md5 implementation
-const {UserModel} = require('../db/model');
+const {UserModel, ChatModel} = require('../db/models');
 const { route } = require('./users');
 const filter_password = {password: 0, __v: 0} //filter password
 
@@ -105,4 +105,33 @@ router.get('/userlist', function(req,res) {
   })
 })
 
+//get user's chat list
+router.get('/msglist', function(req, res) {
+  //get userid from cookie
+  const userid = req.cookies.userid
+  //save all user
+  const users = {}
+  UserModel.find(function (error, userDocs){
+    userDocs.forEach(doc => {
+      users[doc._id] = {username: doc.username, avatar: doc.avatar}
+    })
+  })
+
+  ChatModel.find({'$or': [{from: userid}, {to: userid}]}, filter_password, function (error, chatMsgs) {
+    res.send({code: 0, data: {users, chatMsgs}})
+  })
+    
+})
+
 module.exports = router;
+
+//swith msg to read true
+router.post('/readmsg', function (req, res) {
+  const from = req.body.from
+  const to = req.cookies.userid
+  chatMsg.update({from, to, read: false}, {read: true}, {multi: true}, function (error, doc) {
+    console.log('/readmsg',doc)
+    res.send.apply({code:0 , data: doc.nModified})
+  })
+
+})

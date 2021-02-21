@@ -123,15 +123,18 @@ router.get('/msglist', function(req, res) {
     
 })
 
-module.exports = router;
 
 //swith msg to read true
 router.post('/readmsg', function (req, res) {
   const from = req.body.from
   const to = req.cookies.userid
-  chatMsg.update({from, to, read: false}, {read: true}, {multi: true}, function (error, doc) {
-    console.log('/readmsg',doc)
-    res.send.apply({code:0 , data: doc.nModified})
+  ChatModel.updateMany({from, to ,read: undefined}, {read: true}, function (err, doc) {
+    console.log('/readmsg', doc)
+    res.send({code: 0, data: doc.nModified}) // 更新的数量
   })
+  // res.send({code:0 , data: doc.nModified})
+  
 
 })
+
+module.exports = router;
